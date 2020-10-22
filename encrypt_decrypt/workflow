@@ -1,0 +1,58 @@
+# salt: passwd enhanced
+salt_bytes = os.urandom(32)
+salt_safe_bytes = base64.urlsafe_b64encode(salt_bytes)
+salt_str = salt_safe_bytes.decode()
+
+salt_str = fd.read()
+salt_safe_bytes = salt_str.encode()
+salt_bytes = base64.urlsafe_b64decode(salt_safe_bytes)
+
+
+# passwd & salt: generate encrypt
+pwd_str = getpass.getpass()
+salt_pwd_str = salt_str + pwd_str
+salt_pwd_bytes = salt_pwd_str.encode()
+kdf = (,salt_bytes,)
+kdf_padding_bytes = kdf.derive(salt_pwd_bytes)
+kdf_padding_safe_bytes = base64.urlsafe_b64encode(kdf_padding_bytes)
+encrypt_obj = Fernet(kdf_padding_safe_bytes)
+
+
+# generated encrypt: en/decrypt real token
+real_pwd_padding_bytes = os.urandom(32)
+real_pwd_padding_safe_bytes = base64.urlsafe_b64encode(real_pwd_padding_bytes)
+store_enc_real_pwd_padding_bytes = encrypt_obj.encrypt(real_pwd_padding_safe_bytes)
+store_enc_real_pwd_padding_safe_bytes = base64.urlsafe_b64encode(store_enc_real_pwd_padding_bytes)
+store_enc_real_pwd_padding_safe_str = store_enc_real_pwd_padding_safe_bytes.decode()
+
+store_enc_real_pwd_padding_safe_str = fd.read()
+store_enc_real_pwd_padding_safe_bytes = store_enc_real_pwd_padding_safe_str.encode()
+store_enc_real_pwd_padding_bytes = base64.urlsafe_b64decode(store_enc_real_pwd_padding_safe_bytes)
+real_pwd_padding_safe_bytes = encrypt_obj.decrypt(store_enc_real_pwd_padding_bytes)
+real_encrypt_obj = Fernet(real_pwd_padding_safe_bytes)
+
+
+# token: en/decrypt file
+need_enc_str = fd.read()
+need_enc_bytes = need_enc_str.encode()
+store_enc_bytes = real_encrypt_obj.encrypt(need_enc_bytes)
+store_enc_safe_bytes = base64.urlsafe_b64encode(store_enc_bytes)
+store_enc_safe_str = store_enc_safe_bytes.decode()
+
+store_enc_safe_str = fd.read()
+store_enc_safe_bytes = store_enc_safe_str.encode()
+store_enc_bytes = base64.urlsafe_b64decode(store_enc_safe_bytes)
+need_enc_bytes = real_encrypt_obj.decrypt(store_enc_bytes)
+need_enc_str = need_enc_bytes.decode()
+
+# token: en/decrypt file by lines
+need_enc_str_arr = fd.read().split(os.linesep)
+store_enc_bytes_arr = [real_encrypt_obj.encrypt(enc_str.encode()) for enc_str in need_enc_str_arr]
+store_enc_safe_bytes_arr = [base64.urlsafe_b64encode(store_enc_bytes) for store_enc_bytes in store_enc_bytes_arr]
+store_enc_safe_str_arr = [store_enc_safe_bytes.decode() for store_enc_safe_bytes in store_enc_safe_bytes_arr]
+
+store_enc_safe_str_arr = fd.read().split(os.linesep)
+store_enc_safe_bytes_arr = [store_enc_safe_str.encode() for store_enc_safe_str in store_enc_safe_str_arr]
+store_enc_bytes_arr = [base64.urlsafe_b64decode(store_enc_safe_bytes) for store_enc_safe_bytes in store_enc_safe_bytes_arr]
+need_enc_bytes_arr = [real_encrypt_obj.decrypt(store_enc_bytes) for store_enc_bytes in store_enc_bytes_arr]
+need_enc_str_arr = [need_enc_bytes.decode() for need_enc_bytes in need_enc_bytes_arr]
