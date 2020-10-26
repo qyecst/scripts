@@ -15,15 +15,15 @@ pip install cryptography
 
 ***脚本所在位置的 `.passwd` 目录以及其内的文件都是解密文件所必需的，不能删除。***
 
-默认在脚本的所在目录生成 `.decrypt` 目录，目录用来保存解密出来的文件。
+默认在脚本的所在目录生成 `decrypt` 目录，目录用来保存解密出来的文件。
 
-默认在脚本的所在目录 `.` 保存生成的加密文件。
+默认在脚本的所在目录 `encrypt` 保存生成的加密文件。
 
 ### 使用
 
 ``` bash
-python encrypt_decrypt.py -t [enc|dec] -i <input_file_name> [-a]
+python encrypt_decrypt.py -t [enc|dec] -i <input_file_name/path> [-a]
   # -t [enc|dec] 指定加/解密操作，enc 加密 dec 解密
-  # -i <input_file_name> 指定需要加/解密的文件
+  # -i <input_file_name/path> 指定需要加/解密的文件/目录
   # -a 指定整个文件作为加密对象，默认为文件的行(line)为加密对象
 ```
