@@ -1,0 +1,5 @@
+# run/dev env
+.vscode
+.venv
+venv
+test
