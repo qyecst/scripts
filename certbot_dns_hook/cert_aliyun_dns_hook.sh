@@ -15,9 +15,9 @@ REGION="cn-hangzhou"
 
 check_env() {
     # 需要安装jq、dig 和 aliyun => https://github.com/aliyun/aliyun-cli
-    type jq >/dev/null 2>&1 || { echo 'Need Command `jq`' >&2 && return 1; }
-    type dig >/dev/null 2>&1 || { echo 'Need Command `dig`' >&2 && return 1; }
-    type aliyun >/dev/null 2>&1 || { echo 'Need Command `aliyun`' >&2 && return 1; }
+    type jq >/dev/null 2>&1 || { echo 'Need Command `jq`' >&2 && exit 1; }
+    type dig >/dev/null 2>&1 || { echo 'Need Command `dig`' >&2 && exit 1; }
+    type aliyun >/dev/null 2>&1 || { echo 'Need Command `aliyun`' >&2 && exit 1; }
 }
 
 list_dns() {
